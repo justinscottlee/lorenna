@@ -1,4 +1,6 @@
-use sha2::{Digest, Sha256};
+mod hash;
+
+use hash::{Hash, hashv, hash};
 
 pub struct Transaction {
     pub sender: String,
@@ -7,13 +9,9 @@ pub struct Transaction {
 }
 
 pub struct Block {
-    pub timestamp: [u8; 32], // Timestamp hash.
-    pub transactions: Vec<Transaction>, // A vector of this block's transactions.
-
-    pub previous_hash: [u8; 32], // Hash of the previous block.
-    pub hash: [u8; 32], // Hash of this block.
-
-    pub merkle_root: [u8; 32], // Computed merkle root of this block's transactions.
+    pub previous_hash: Hash, // Hash of the previous block.
+    pub hash: Hash, // Hash of this block.
+    pub merkle_root: Hash, // Computed merkle root of this block's transactions.
 
     pub index: u64, // index of the block in the blockchain
 
@@ -21,23 +19,13 @@ pub struct Block {
 }
 
 fn main() {
-    // Get current time in milliseconds.
-    let timestamp = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .unwrap()
-        .as_millis();
+    let mut current_hash = hash("genesis_string".as_bytes());
 
-    let mut current_hash = Sha256::digest(b"Genesis");
-    let mut hasher = Sha256::new();
-    for _ in 1..5000000 {
-        hasher.update(&current_hash);
-       current_hash = hasher.finalize_reset();
+    // get current instant
+    let now = std::time::Instant::now();
+    for _ in 1..2000000 {
+        current_hash = hash(&current_hash.0);
     }
-
-    // Get end time.
-    let end = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .unwrap()
-        .as_millis();
-    println!("Time taken: {}", end - timestamp);
+    // print elapsed time
+    println!("{:?}", now.elapsed());
 }
