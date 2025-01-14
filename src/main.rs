@@ -1,6 +1,8 @@
 mod hash;
+mod merkle;
 
-use hash::{Hash, hashv, hash};
+use hash::{Hash, hashv};
+use merkle::MerkleTree;
 
 pub struct Transaction {
     pub sender: String,
@@ -19,13 +21,6 @@ pub struct Block {
 }
 
 fn main() {
-    let mut current_hash = hash("genesis_string".as_bytes());
-
-    // get current instant
-    let now = std::time::Instant::now();
-    for _ in 1..2000000 {
-        current_hash = hash(&current_hash.0);
-    }
-    // print elapsed time
-    println!("{:?}", now.elapsed());
+    let mut items: [&[u8]; 9] = [&[0], &[1], &[2], &[3], &[4], &[5], &[6], &[7], &[8]];
+    let mut mt = MerkleTree::new(&items);
 }
