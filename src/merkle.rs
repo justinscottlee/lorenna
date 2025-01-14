@@ -55,6 +55,32 @@ impl MerkleTree {
         tree
     }
     
+    pub fn generate_proof(&self, leaf_index: usize) -> Vec<Hash> {
+        let mut proof = Vec::new();
+        let mut index = leaf_index;
+
+        let mut level_start_index = 0;
+        let mut level_size = self.leaf_count;
+        while level_size > 1 {
+            let sibling_index = if index % 2 == 0 {
+                index + 1
+            } else {
+                index -1
+            };
+
+            if sibling_index < level_size {
+                let sibling = self.nodes[level_start_index + sibling_index];
+                proof.push(sibling);
+            }
+
+            index /= 2;
+            level_start_index += level_size;
+            level_size = (level_size + 1) / 2;
+        }
+
+        proof
+    }
+
     pub fn get_root(&self) -> Option<&Hash> {
         self.nodes.last()
     }
