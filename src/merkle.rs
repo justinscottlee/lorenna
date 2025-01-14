@@ -1,8 +1,24 @@
 use crate::{Hash, hashv};
 
+/*
+// Create distinction between leaf and internal nodes to protect against second-preimage attacks.
+// https://flawed.net.nz/2018/02/21/attacking-merkle-trees-with-a-second-preimage-attack/
+*/
+macro_rules! hash_leaf {
+    ($leaf:expr) => {
+        hashv(&[&[0], $leaf])
+    };
+}
+
+macro_rules! hash_internal {
+    ($left:expr, $right:expr) => {
+        hashv(&[&[1], &$left.0, &$right.0])
+    };
+}
+
 pub struct MerkleTree {
-    nodes: Vec<Hash>,
-    leaf_count: usize,
+    pub nodes: Vec<Hash>,
+    pub leaf_count: usize,
 }
 
 impl MerkleTree {
@@ -13,7 +29,7 @@ impl MerkleTree {
         };
 
         for item in items {
-            let leaf = hashv(&[&[0], item]);
+            let leaf = hash_leaf!(item);
             tree.nodes.push(leaf);
         }
 
@@ -28,7 +44,8 @@ impl MerkleTree {
                 } else {
                     tree.nodes[i + level_start_index]
                 };
-                next_level.push(hashv(&[&[1], &left.0, &right.0]));
+                let internal = hash_internal!(left, right);
+                next_level.push(internal);
             }
             level_start_index += level_size;
             level_size = next_level.len();
@@ -36,5 +53,9 @@ impl MerkleTree {
         }
 
         tree
+    }
+    
+    pub fn get_root(&self) -> Option<&Hash> {
+        self.nodes.last()
     }
 }
