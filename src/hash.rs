@@ -3,7 +3,7 @@ use std::fmt;
 use bs58;
 
 const HASH_SIZE: usize = 32;
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq)]
 pub struct Hash(pub [u8; HASH_SIZE]);
 
 /*

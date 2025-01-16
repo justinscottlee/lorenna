@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 sha2 = "0.10.8"
 bs58 = "0.5.1"
+fast-math = "0.1.1"
