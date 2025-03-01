@@ -59,7 +59,7 @@ impl MerkleProof {
 impl MerkleTree {
     pub fn new<T: AsRef<[u8]>>(items: &[T]) -> Self {
         let mut tree = MerkleTree {
-            nodes: Vec::with_capacity(fast_math::log2_raw(items.len() as f32) as usize + 2 * items.len() + 1),
+            nodes: Vec::with_capacity(fast_math::log2_raw((1 + items.len()) as f32) as usize + 2 * items.len() + 1),
             leaf_count: items.len(),
         };
 
